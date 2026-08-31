@@ -1,0 +1,22 @@
+[
+  {
+    "rating": "1 Star",
+    "count": 50
+  },
+  {
+    "rating": "2 Stars",
+    "count": 30
+  },
+  {
+    "rating": "3 Stars",
+    "count": 70
+  },
+  {
+    "rating": "4 Stars",
+    "count": 100
+  },
+  {
+    "rating": "5 Stars",
+    "count": 200
+  }
+]

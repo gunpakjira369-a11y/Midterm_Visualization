@@ -1,0 +1,3052 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Data Visualization Technology</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Mali:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+
+
+<style>
+
+/* =====================================================
+   GLOBAL
+===================================================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    font-family:"Kanit",sans-serif;
+    background:
+        linear-gradient(
+            135deg,
+            #fff7fb 0%,
+            #f8f4ff 50%,
+            #f4f9ff 100%
+        );
+    color:#443452;
+    min-height:100vh;
+}
+
+
+/* =====================================================
+   HERO
+===================================================== */
+
+.hero{
+    position:relative;
+    overflow:hidden;
+
+    min-height:235px;
+
+    display:flex;
+    align-items:center;
+
+    padding:42px 8%;
+
+    background:
+        linear-gradient(
+            135deg,
+            #9b7de3,
+            #c28bea 48%,
+            #f29bbb
+        );
+
+    box-shadow:
+        0 12px 35px
+        rgba(120,75,150,.16);
+}
+
+.hero::before{
+    content:"";
+
+    position:absolute;
+
+    width:320px;
+    height:320px;
+
+    border-radius:50%;
+
+    background:
+        rgba(255,255,255,.12);
+
+    right:-80px;
+    top:-170px;
+
+    animation:
+        floating 6s ease-in-out infinite;
+}
+
+.hero::after{
+    content:"";
+
+    position:absolute;
+
+    width:190px;
+    height:190px;
+
+    border-radius:50%;
+
+    background:
+        rgba(255,255,255,.10);
+
+    left:-60px;
+    bottom:-120px;
+
+    animation:
+        floating 5s ease-in-out infinite reverse;
+}
+
+@keyframes floating{
+
+    0%,100%{
+        transform:translateY(0);
+    }
+
+    50%{
+        transform:translateY(16px);
+    }
+}
+
+.sparkle{
+    position:absolute;
+
+    color:white;
+
+    opacity:.7;
+
+    font-size:22px;
+
+    animation:
+        sparkle 3s ease-in-out infinite;
+}
+
+.sparkle.s1{
+    top:35px;
+    right:27%;
+}
+
+.sparkle.s2{
+    bottom:35px;
+    right:12%;
+    animation-delay:1s;
+}
+
+.sparkle.s3{
+    top:55px;
+    left:35%;
+    animation-delay:1.7s;
+}
+
+@keyframes sparkle{
+
+    0%,100%{
+        opacity:.25;
+        transform:scale(.8) rotate(0);
+    }
+
+    50%{
+        opacity:1;
+        transform:scale(1.2) rotate(15deg);
+    }
+}
+
+.hero-content{
+    position:relative;
+    z-index:2;
+}
+
+.hero-title{
+    font-family:"Mali",cursive;
+
+    font-size:
+        clamp(34px,5vw,58px);
+
+    font-weight:700;
+
+    color:white;
+
+    line-height:1.2;
+
+    text-shadow:
+        0 4px 12px
+        rgba(75,35,90,.18);
+
+    animation:
+        titleIn .8s ease;
+}
+
+.hero-subtitle{
+    margin-top:9px;
+
+    font-size:17px;
+
+    font-weight:300;
+
+    color:white;
+
+    opacity:.92;
+
+    animation:
+        titleIn 1s ease;
+}
+
+@keyframes titleIn{
+
+    from{
+        opacity:0;
+        transform:translateY(18px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+
+/* =====================================================
+   NAVIGATION
+===================================================== */
+
+.navbar{
+    position:sticky;
+
+    top:0;
+
+    z-index:100;
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:12px;
+
+    padding:12px;
+
+    background:
+        rgba(255,255,255,.9);
+
+    backdrop-filter:
+        blur(15px);
+
+    border-bottom:
+        1px solid #eee5f3;
+}
+
+.nav-btn{
+    border:none;
+
+    padding:10px 26px;
+
+    border-radius:30px;
+
+    font-family:"Kanit",sans-serif;
+
+    font-size:16px;
+
+    font-weight:500;
+
+    cursor:pointer;
+
+    color:#80618f;
+
+    background:#f7f0fa;
+
+    transition:.3s;
+}
+
+.nav-btn:hover{
+    transform:translateY(-2px);
+
+    background:#f0e5f8;
+}
+
+.nav-btn.active{
+    color:white;
+
+    background:
+        linear-gradient(
+            135deg,
+            #9a6fd0,
+            #e58eaf
+        );
+
+    box-shadow:
+        0 7px 18px
+        rgba(155,111,208,.24);
+}
+
+
+/* =====================================================
+   MAIN
+===================================================== */
+
+.container{
+    width:
+        min(1400px,92%);
+
+    margin:
+        35px auto 70px;
+}
+
+.page{
+    display:none;
+
+    animation:
+        pageAppear .45s ease;
+}
+
+.page.active{
+    display:block;
+}
+
+@keyframes pageAppear{
+
+    from{
+        opacity:0;
+        transform:translateY(15px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+
+/* =====================================================
+   SECTION TITLE
+===================================================== */
+
+.section-title{
+    margin-bottom:25px;
+}
+
+.section-label{
+    font-family:"Mali",cursive;
+
+    color:#a06ac6;
+
+    font-size:16px;
+
+    font-weight:600;
+}
+
+.section-title h2{
+    font-family:"Kanit",sans-serif;
+
+    font-size:34px;
+
+    font-weight:600;
+
+    color:#49345b;
+
+    margin-top:2px;
+}
+
+.section-title p{
+    margin-top:3px;
+
+    color:#95859e;
+
+    font-size:15px;
+
+    font-weight:300;
+}
+
+
+/* =====================================================
+   DATASET
+===================================================== */
+
+.dataset{
+    background:
+        rgba(255,255,255,.92);
+
+    border-radius:26px;
+
+    padding:27px;
+
+    margin-bottom:32px;
+
+    border:
+        1px solid #eee3f2;
+
+    box-shadow:
+        0 14px 38px
+        rgba(100,70,120,.07);
+}
+
+.dataset-header{
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:18px;
+
+    margin-bottom:23px;
+}
+
+.dataset-title{
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+}
+
+.dataset-icon{
+    width:58px;
+    height:58px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border-radius:18px;
+
+    font-size:27px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f0e5ff,
+            #ffe8f1
+        );
+}
+
+.dataset-title h3{
+    font-family:"Kanit",sans-serif;
+
+    font-size:23px;
+
+    font-weight:600;
+
+    color:#4b355c;
+}
+
+.dataset-title p{
+    font-size:14px;
+
+    color:#9a8ba2;
+
+    font-weight:300;
+}
+
+
+/* =====================================================
+   FILTER
+===================================================== */
+
+.filter{
+    display:flex;
+
+    flex-wrap:wrap;
+
+    justify-content:flex-end;
+
+    gap:6px;
+}
+
+.filter button{
+    border:
+        1px solid #e5d8ed;
+
+    background:white;
+
+    color:#876b95;
+
+    border-radius:25px;
+
+    padding:7px 13px;
+
+    font-family:"Kanit",sans-serif;
+
+    font-size:14px;
+
+    cursor:pointer;
+
+    transition:.25s;
+}
+
+.filter button:hover{
+    transform:translateY(-2px);
+
+    border-color:#c29ddd;
+}
+
+.filter button.active{
+    color:white;
+
+    border-color:transparent;
+
+    background:
+        linear-gradient(
+            135deg,
+            #9a6bd0,
+            #df8faf
+        );
+
+    box-shadow:
+        0 6px 15px
+        rgba(155,100,200,.2);
+}
+
+
+/* =====================================================
+   STATS
+===================================================== */
+
+.stats{
+    display:grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap:14px;
+
+    margin-bottom:20px;
+}
+
+.stat{
+    padding:17px 20px;
+
+    border-radius:18px;
+
+    background:#fff;
+
+    border:
+        1px solid #eee5f2;
+
+    transition:.3s;
+}
+
+.stat:hover{
+    transform:translateY(-3px);
+
+    box-shadow:
+        0 10px 22px
+        rgba(100,70,120,.08);
+}
+
+.stat small{
+    display:block;
+
+    color:#9b8da3;
+
+    font-size:14px;
+}
+
+.stat strong{
+    display:block;
+
+    margin-top:2px;
+
+    color:#8051c4;
+
+    font-family:"Mali",cursive;
+
+    font-size:24px;
+}
+
+
+/* =====================================================
+   CHART GRID
+===================================================== */
+
+.chart-grid{
+    display:grid;
+
+    grid-template-columns:
+        repeat(2,1fr);
+
+    gap:20px;
+}
+
+.chart-card{
+    min-height:500px;
+
+    padding:20px;
+
+    border-radius:23px;
+
+    background:white;
+
+    border:
+        1px solid #eee5f2;
+
+    box-shadow:
+        0 9px 28px
+        rgba(100,70,120,.05);
+
+    transition:.3s;
+}
+
+.chart-card:hover{
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 14px 32px
+        rgba(100,70,120,.09);
+}
+
+.chart-card.full{
+    grid-column:1 / -1;
+
+    min-height:510px;
+}
+
+.chart-heading{
+    text-align:center;
+
+    margin-bottom:5px;
+}
+
+.chart-heading h3{
+    font-family:"Mali",cursive;
+
+    font-size:22px;
+
+    color:#4b355c;
+}
+
+.chart-heading p{
+    font-size:13px;
+
+    color:#a092a8;
+
+    font-weight:300;
+}
+
+.chart{
+    width:100%;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+}
+
+
+/* =====================================================
+   AXIS
+===================================================== */
+
+.axis text{
+    font-family:"Kanit",sans-serif;
+
+    font-size:12px;
+
+    fill:#8b7b94;
+}
+
+.axis path,
+.axis line{
+    stroke:#dcd1e3;
+}
+
+.grid-line{
+    stroke:#eee8f1;
+
+    stroke-dasharray:4 5;
+}
+
+
+/* =====================================================
+   LINE
+===================================================== */
+
+.revenue-line{
+    fill:none;
+
+    stroke-width:4;
+
+    stroke-linecap:round;
+
+    stroke-linejoin:round;
+}
+
+.line-point{
+    stroke:white;
+
+    stroke-width:2.5;
+
+    cursor:pointer;
+}
+
+
+/* =====================================================
+   LEGEND
+===================================================== */
+
+.legend-text{
+    font-family:"Kanit",sans-serif;
+
+    font-size:13px;
+
+    fill:#76667f;
+}
+
+
+/* =====================================================
+   TOOLTIP
+===================================================== */
+
+.tooltip{
+    position:fixed;
+
+    z-index:9999;
+
+    pointer-events:none;
+
+    opacity:0;
+
+    padding:
+        10px 15px;
+
+    border-radius:13px;
+
+    color:white;
+
+    background:
+        rgba(69,51,80,.96);
+
+    font-size:14px;
+
+    line-height:1.7;
+
+    box-shadow:
+        0 10px 25px
+        rgba(0,0,0,.18);
+
+    transition:opacity .15s ease;
+}
+
+
+/* =====================================================
+   ANSWERS
+===================================================== */
+
+.answer{
+    background:white;
+
+    border-radius:24px;
+
+    padding:28px;
+
+    margin-bottom:23px;
+
+    border:
+        1px solid #eee5f2;
+
+    box-shadow:
+        0 11px 30px
+        rgba(100,70,120,.055);
+}
+
+.answer h3{
+    font-family:"Kanit",sans-serif;
+
+    font-size:23px;
+
+    font-weight:600;
+
+    color:#593a70;
+
+    margin-bottom:13px;
+}
+
+.answer > p{
+    font-size:16px;
+
+    line-height:1.85;
+
+    color:#5e5264;
+}
+
+
+/* =====================================================
+   PRO / CON
+===================================================== */
+
+.pro,
+.con{
+    margin-top:18px;
+
+    padding:18px 22px;
+
+    border-radius:17px;
+}
+
+.pro{
+    background:#effbf4;
+
+    border-left:
+        6px solid #55bd7a;
+}
+
+.pro h4{
+    font-family:"Kanit",sans-serif;
+
+    color:#299356;
+
+    font-size:19px;
+
+    font-weight:600;
+
+    margin-bottom:6px;
+}
+
+.pro p{
+    font-size:15.5px;
+
+    line-height:1.8;
+
+    color:#526659;
+}
+
+.con{
+    background:#fff1f2;
+
+    border-left:
+        6px solid #ec6d78;
+}
+
+.con h4{
+    font-family:"Kanit",sans-serif;
+
+    color:#d94d5b;
+
+    font-size:19px;
+
+    font-weight:600;
+
+    margin-bottom:6px;
+}
+
+.con p{
+    font-size:15.5px;
+
+    line-height:1.8;
+
+    color:#695357;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media(max-width:1000px){
+
+    .chart-grid{
+        grid-template-columns:1fr;
+    }
+
+    .chart-card.full{
+        grid-column:auto;
+    }
+}
+
+@media(max-width:750px){
+
+    .hero{
+        min-height:200px;
+
+        padding:35px 7%;
+    }
+
+    .hero-title{
+        font-size:34px;
+    }
+
+    .hero-subtitle{
+        font-size:15px;
+    }
+
+    .dataset-header{
+        flex-direction:column;
+
+        align-items:flex-start;
+    }
+
+    .filter{
+        justify-content:flex-start;
+    }
+
+    .stats{
+        grid-template-columns:1fr;
+    }
+
+    .dataset{
+        padding:20px;
+    }
+
+    .answer{
+        padding:21px;
+    }
+
+    .answer h3{
+        font-size:20px;
+    }
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     HERO
+===================================================== -->
+
+<header class="hero">
+
+    <div class="sparkle s1">✦</div>
+    <div class="sparkle s2">✧</div>
+    <div class="sparkle s3">✦</div>
+
+    <div class="hero-content">
+
+        <div class="hero-title">
+            Data Visualization Technology
+        </div>
+
+        <div class="hero-subtitle">
+            การแสดงผลข้อมูลเพื่อการวิเคราะห์และนำเสนอข้อมูล
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- =====================================================
+     NAVIGATION
+===================================================== -->
+
+<nav class="navbar">
+
+    <button
+        class="nav-btn active"
+        onclick="showPage('part2',this)">
+
+        📊 ส่วนที่ 2
+
+    </button>
+
+    <button
+        class="nav-btn"
+        onclick="showPage('part1',this)">
+
+        📝 ส่วนที่ 1
+
+    </button>
+
+</nav>
+
+
+<main class="container">
+
+
+<!-- =====================================================
+     PART 2
+===================================================== -->
+
+<section
+    id="part2"
+    class="page active">
+
+    <div class="section-title">
+
+        <div class="section-label">
+            Interactive Dashboard
+        </div>
+
+        <h2>
+            ส่วนที่ 2: การปฏิบัติจริง
+        </h2>
+
+        <p>
+            แสดงผลข้อมูลด้วยกราฟแบบ Interactive โดยใช้ D3.js
+        </p>
+
+    </div>
+
+
+    <!-- =================================================
+         DATASET 1
+    ================================================== -->
+
+    <section class="dataset">
+
+        <div class="dataset-header">
+
+            <div class="dataset-title">
+
+                <div class="dataset-icon">
+                    ⭐
+                </div>
+
+                <div>
+
+                    <h3>
+                        Dataset 1: Customer Satisfaction
+                    </h3>
+
+                    <p>
+                        ข้อมูลระดับความพึงพอใจของลูกค้า
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="filter"
+                id="ratingFilter">
+            </div>
+
+        </div>
+
+
+        <div class="stats">
+
+            <div class="stat">
+
+                <small>
+                    จำนวนผู้ตอบ
+                </small>
+
+                <strong id="totalCustomers">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="stat">
+
+                <small>
+                    คะแนนเฉลี่ย
+                </small>
+
+                <strong id="averageRating">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="stat">
+
+                <small>
+                    ระดับที่เลือก
+                </small>
+
+                <strong id="selectedRating">
+                    ทุกระดับ
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="chart-grid">
+
+            <div class="chart-card full">
+
+                <div class="chart-heading">
+
+                    <h3>
+                        🍩 Donut Chart
+                    </h3>
+
+                    <p>
+                        สัดส่วนระดับความพึงพอใจของลูกค้า
+                    </p>
+
+                </div>
+
+                <div
+                    id="donutChart"
+                    class="chart">
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         DATASET 2
+    ================================================== -->
+
+    <section class="dataset">
+
+        <div class="dataset-header">
+
+            <div class="dataset-title">
+
+                <div class="dataset-icon">
+                    📈
+                </div>
+
+                <div>
+
+                    <h3>
+                        Dataset 2: Monthly Revenue
+                    </h3>
+
+                    <p>
+                        ข้อมูลรายได้ ค่าใช้จ่าย และกำไรรายเดือน
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="filter"
+                id="monthFilter">
+            </div>
+
+        </div>
+
+
+        <div class="stats">
+
+            <div class="stat">
+
+                <small>
+                    รายได้รวม
+                </small>
+
+                <strong id="totalRevenue">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="stat">
+
+                <small>
+                    ค่าใช้จ่ายรวม
+                </small>
+
+                <strong id="totalExpenses">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="stat">
+
+                <small>
+                    กำไรรวม
+                </small>
+
+                <strong id="totalProfit">
+                    -
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="chart-grid">
+
+
+            <!-- LINE -->
+
+            <div class="chart-card">
+
+                <div class="chart-heading">
+
+                    <h3>
+                        📈 Line Chart
+                    </h3>
+
+                    <p>
+                        แนวโน้มรายได้ ค่าใช้จ่าย และกำไร
+                    </p>
+
+                </div>
+
+                <div
+                    id="revenueLine"
+                    class="chart">
+                </div>
+
+            </div>
+
+
+            <!-- BAR -->
+
+            <div class="chart-card">
+
+                <div class="chart-heading">
+
+                    <h3>
+                        📊 Bar Chart
+                    </h3>
+
+                    <p>
+                        เปรียบเทียบข้อมูลทางการเงินในแต่ละเดือน
+                    </p>
+
+                </div>
+
+                <div
+                    id="revenueBar"
+                    class="chart">
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+</section>
+
+
+<!-- =====================================================
+     PART 1
+===================================================== -->
+
+<section
+    id="part1"
+    class="page">
+
+
+    <div class="section-title">
+
+        <div class="section-label">
+            Conceptual Understanding
+        </div>
+
+        <h2>
+            ส่วนที่ 1: ความเข้าใจเชิงแนวคิด
+        </h2>
+
+        <p>
+            ประโยชน์ ข้อดี และข้อเสียของการแสดงผลข้อมูล
+        </p>
+
+    </div>
+
+
+    <!-- QUESTION 1 -->
+
+    <div class="answer">
+
+        <h3>
+            1. ประโยชน์ของการใช้เทคโนโลยีการแสดงผลข้อมูลในด้านการวิเคราะห์ข้อมูล
+        </h3>
+
+
+        <p>
+
+            การแสดงผลข้อมูล (Data Visualization)
+            คือการนำข้อมูลมาแสดงในรูปแบบกราฟ แผนภูมิ
+            ตาราง หรือภาพ เพื่อช่วยให้ผู้วิเคราะห์สามารถ
+            เข้าใจข้อมูลและมองเห็นความสัมพันธ์ของข้อมูล
+            ได้ง่ายขึ้น
+
+        </p>
+
+
+        <div class="pro">
+
+            <h4>
+                ✓ 1) ช่วยให้เข้าใจข้อมูลได้ง่ายและรวดเร็ว
+            </h4>
+
+            <p>
+
+                การแสดงข้อมูลด้วยกราฟช่วยลดความซับซ้อน
+                ของข้อมูลจำนวนมาก ทำให้สามารถมองเห็น
+                ข้อมูลโดยรวมได้ทันที
+
+                <br><br>
+
+                <strong>ตัวอย่าง:</strong>
+                การใช้กราฟแท่งแสดงยอดขายของแต่ละเดือน
+                ทำให้เห็นได้ทันทีว่าเดือนไหนมียอดขายสูงหรือต่ำ
+
+            </p>
+
+        </div>
+
+
+        <div class="pro">
+
+            <h4>
+                ✓ 2) ช่วยค้นหาแนวโน้มและรูปแบบของข้อมูล
+            </h4>
+
+            <p>
+
+                กราฟช่วยให้เห็นการเปลี่ยนแปลงหรือแนวโน้ม
+                ของข้อมูลได้ชัดเจนกว่าการดูตัวเลขเพียงอย่างเดียว
+
+                <br><br>
+
+                <strong>ตัวอย่าง:</strong>
+                การใช้กราฟเส้นแสดงยอดขายย้อนหลัง 12 เดือน
+                สามารถเห็นได้ว่ายอดขายเพิ่มขึ้นหรือลดลงในช่วงใด
+
+            </p>
+
+        </div>
+
+
+        <div class="pro">
+
+            <h4>
+                ✓ 3) ช่วยในการเปรียบเทียบข้อมูลและสนับสนุนการตัดสินใจ
+            </h4>
+
+            <p>
+
+                การแสดงข้อมูลในรูปแบบกราฟช่วยให้
+                เปรียบเทียบข้อมูลหลายกลุ่มได้ง่าย
+                และนำผลไปใช้ประกอบการตัดสินใจได้
+
+                <br><br>
+
+                <strong>ตัวอย่าง:</strong>
+                การใช้กราฟแท่งเปรียบเทียบยอดขาย
+                ของแต่ละภูมิภาค ทำให้ผู้บริหารเห็นว่า
+                ภูมิภาคใดมียอดขายสูงสุด
+
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- QUESTION 2 -->
+
+    <div class="answer">
+
+        <h3>
+            2. ข้อดีและข้อเสียของการใช้เทคโนโลยีการแสดงผลข้อมูล
+        </h3>
+
+
+        <div class="pro">
+
+            <h4>
+                ✓ ข้อดี
+            </h4>
+
+            <p>
+
+                <strong>
+                    1) ทำให้ข้อมูลที่ซับซ้อนเข้าใจง่ายขึ้น
+                </strong>
+
+                <br>
+
+                ข้อมูลจำนวนมากสามารถสรุปและนำเสนอ
+                เป็นกราฟหรือแผนภูมิ ทำให้ผู้ใช้งาน
+                มองเห็นภาพรวมและเข้าใจข้อมูลได้รวดเร็ว
+
+                <br><br>
+
+                <strong>
+                    2) ช่วยให้วิเคราะห์และตัดสินใจได้อย่างมีประสิทธิภาพ
+                </strong>
+
+                <br>
+
+                การมองเห็นแนวโน้ม ความสัมพันธ์
+                และความแตกต่างของข้อมูลช่วยให้สามารถ
+                นำข้อมูลมาใช้ประกอบการวางแผน
+                และตัดสินใจได้ดีขึ้น
+
+            </p>
+
+        </div>
+
+
+        <div class="con">
+
+            <h4>
+                ✕ ข้อเสีย
+            </h4>
+
+            <p>
+
+                <strong>
+                    1) อาจทำให้เกิดความเข้าใจผิดหากเลือกใช้กราฟไม่เหมาะสม
+                </strong>
+
+                <br>
+
+                การเลือกประเภทกราฟหรือการกำหนดแกน
+                ที่ไม่เหมาะสมอาจทำให้ผู้ดูตีความข้อมูลผิด
+
+                <br><br>
+
+                <strong>ตัวอย่าง:</strong>
+                การตัดแกน Y ให้เริ่มจากค่าที่สูงกว่า 0
+                อาจทำให้ความแตกต่างของข้อมูล
+                ดูมากกว่าความเป็นจริง
+
+                <br><br>
+
+                <strong>
+                    2) ต้องใช้เวลาและทักษะในการจัดเตรียมและออกแบบข้อมูล
+                </strong>
+
+                <br>
+
+                การสร้าง Visualization ที่ดีต้องเลือกข้อมูล
+                ประเภทกราฟ สี และรูปแบบการนำเสนอให้เหมาะสม
+                หากออกแบบไม่ดีอาจทำให้กราฟอ่านยาก
+                และไม่สามารถสื่อสารข้อมูลได้อย่างมีประสิทธิภาพ
+
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+</main>
+
+
+<div class="tooltip"></div>
+
+
+<script>
+
+/* =====================================================
+   PAGE SWITCH
+===================================================== */
+
+function showPage(id,button){
+
+    document
+        .querySelectorAll(".page")
+        .forEach(page =>
+            page.classList.remove("active")
+        );
+
+    document
+        .querySelectorAll(".nav-btn")
+        .forEach(btn =>
+            btn.classList.remove("active")
+        );
+
+    document
+        .getElementById(id)
+        .classList.add("active");
+
+    button.classList.add("active");
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+}
+
+
+/* =====================================================
+   TOOLTIP
+===================================================== */
+
+const tooltip =
+    d3.select(".tooltip");
+
+
+/* =====================================================
+   MONEY
+===================================================== */
+
+function money(value){
+
+    return Number(value)
+        .toLocaleString("th-TH")
+        + " บาท";
+}
+
+
+/* =====================================================
+   DATASET 1
+   CUSTOMER SATISFACTION
+===================================================== */
+
+d3.json("CustomerSatisfaction.json")
+.then(data => {
+
+    let selected = "ทั้งหมด";
+
+
+    const colors =
+        d3.scaleOrdinal()
+        .domain(
+            data.map(d => d.rating)
+        )
+        .range([
+            "#d8b4fe",
+            "#c4b5fd",
+            "#a5b4fc",
+            "#93c5fd",
+            "#f9a8d4"
+        ]);
+
+
+    const filter =
+        d3.select("#ratingFilter");
+
+
+    /* ALL */
+
+    filter
+        .append("button")
+        .attr("class","active")
+        .text("ทั้งหมด")
+        .on("click",function(){
+
+            selected = "ทั้งหมด";
+
+            setActive(
+                filter,
+                this
+            );
+
+            drawDonut();
+
+        });
+
+
+    /* RATINGS */
+
+    data.forEach(d => {
+
+        filter
+            .append("button")
+            .text("⭐ " + d.rating)
+            .on("click",function(){
+
+                selected = d.rating;
+
+                setActive(
+                    filter,
+                    this
+                );
+
+                drawDonut();
+
+            });
+
+    });
+
+
+    function setActive(container,button){
+
+        container
+            .selectAll("button")
+            .classed("active",false);
+
+        d3.select(button)
+            .classed("active",true);
+    }
+
+
+    /* =================================================
+       DONUT
+    ================================================= */
+
+    const width = 720;
+    const height = 430;
+    const radius = 145;
+
+
+    const svg =
+        d3.select("#donutChart")
+        .append("svg")
+        .attr(
+            "viewBox",
+            `0 0 ${width} ${height}`
+        )
+        .attr(
+            "width",
+            "100%"
+        )
+        .attr(
+            "preserveAspectRatio",
+            "xMidYMid meet"
+        );
+
+
+    const g =
+        svg
+        .append("g")
+        .attr(
+            "transform",
+            `translate(${width/2},${height/2})`
+        );
+
+
+    const pie =
+        d3.pie()
+        .value(d => +d.count)
+        .sort(null);
+
+
+    const arc =
+        d3.arc()
+        .innerRadius(88)
+        .outerRadius(radius);
+
+
+    const arcHover =
+        d3.arc()
+        .innerRadius(88)
+        .outerRadius(radius + 12);
+
+
+    const centerNumber =
+        g.append("text")
+        .attr(
+            "text-anchor",
+            "middle"
+        )
+        .attr(
+            "dy",
+            "-2"
+        )
+        .style(
+            "font-family",
+            "Mali"
+        )
+        .style(
+            "font-size",
+            "31px"
+        )
+        .style(
+            "font-weight",
+            "700"
+        )
+        .style(
+            "fill",
+            "#65448a"
+        );
+
+
+    g.append("text")
+        .attr(
+            "text-anchor",
+            "middle"
+        )
+        .attr(
+            "dy",
+            "25"
+        )
+        .style(
+            "font-size",
+            "14px"
+        )
+        .style(
+            "fill",
+            "#96879f"
+        )
+        .text("ผู้ตอบ");
+
+
+    function drawDonut(){
+
+        const filtered =
+            selected === "ทั้งหมด"
+            ? data
+            : data.filter(
+                d =>
+                    d.rating === selected
+            );
+
+
+        const total =
+            d3.sum(
+                filtered,
+                d => +d.count
+            );
+
+
+        const weighted =
+            d3.sum(
+                filtered,
+                d => {
+
+                    const score =
+                        Number(
+                            d.rating.match(/\d+/)[0]
+                        );
+
+                    return score * (+d.count);
+                }
+            );
+
+
+        const average =
+            total
+            ? weighted / total
+            : 0;
+
+
+        d3.select("#totalCustomers")
+            .text(
+                total.toLocaleString("th-TH")
+                + " คน"
+            );
+
+
+        d3.select("#averageRating")
+            .text(
+                average.toFixed(1)
+                + " ⭐"
+            );
+
+
+        d3.select("#selectedRating")
+            .text(
+                selected === "ทั้งหมด"
+                ? "ทุกระดับ"
+                : selected
+            );
+
+
+        centerNumber
+            .text(
+                total.toLocaleString("th-TH")
+            );
+
+
+        const arcs =
+            pie(filtered);
+
+
+        const paths =
+            g.selectAll(".donut-slice")
+            .data(
+                arcs,
+                d => d.data.rating
+            );
+
+
+        paths
+            .exit()
+            .transition()
+            .duration(300)
+            .style("opacity",0)
+            .remove();
+
+
+        const enter =
+            paths
+            .enter()
+            .append("path")
+            .attr(
+                "class",
+                "donut-slice"
+            )
+            .attr(
+                "fill",
+                d => colors(d.data.rating)
+            )
+            .attr(
+                "stroke",
+                "white"
+            )
+            .attr(
+                "stroke-width",
+                4
+            )
+            .each(function(d){
+
+                this._current = {
+                    startAngle:d.startAngle,
+                    endAngle:d.startAngle
+                };
+
+            });
+
+
+        enter
+        .merge(paths)
+        .on(
+            "mouseover",
+            function(event,d){
+
+                d3.select(this)
+                    .transition()
+                    .duration(160)
+                    .attr("d",arcHover);
+
+
+                tooltip
+                    .style("opacity",1)
+                    .html(`
+                        <strong>${d.data.rating}</strong>
+                        <br>
+                        จำนวน: ${d.data.count} คน
+                        <br>
+                        สัดส่วน:
+                        ${(d.data.count / total * 100).toFixed(1)}%
+                    `);
+
+            }
+        )
+        .on(
+            "mousemove",
+            function(event){
+
+                tooltip
+                    .style(
+                        "left",
+                        event.clientX + 16 + "px"
+                    )
+                    .style(
+                        "top",
+                        event.clientY - 55 + "px"
+                    );
+
+            }
+        )
+        .on(
+            "mouseout",
+            function(){
+
+                d3.select(this)
+                    .transition()
+                    .duration(160)
+                    .attr("d",arc);
+
+                tooltip
+                    .style("opacity",0);
+
+            }
+        )
+        .transition()
+        .duration(750)
+        .attrTween(
+            "d",
+            function(d){
+
+                const current =
+                    this._current;
+
+                const interpolate =
+                    d3.interpolate(
+                        current,
+                        d
+                    );
+
+                this._current =
+                    interpolate(1);
+
+                return t =>
+                    arc(interpolate(t));
+            }
+        );
+
+    }
+
+
+    drawDonut();
+
+})
+.catch(error => {
+
+    console.error(
+        "ไม่สามารถโหลด CustomerSatisfaction.json",
+        error
+    );
+
+});
+
+
+/* =====================================================
+   DATASET 2
+   MONTHLY REVENUE
+===================================================== */
+
+d3.json("MonthlyRevenue.json")
+.then(data => {
+
+
+    /* =================================================
+       CLEAN DATA
+    ================================================= */
+
+    data = data.map(d => ({
+
+        month: String(d.month),
+
+        revenue: +d.revenue,
+
+        expenses: +d.expenses,
+
+        profit: +d.profit
+
+    }));
+
+
+    let selectedMonth = "ทั้งหมด";
+
+
+    const metrics = [
+
+        {
+            key:"revenue",
+            name:"รายได้",
+            color:"#8B5CF6"
+        },
+
+        {
+            key:"expenses",
+            name:"ค่าใช้จ่าย",
+            color:"#EC4899"
+        },
+
+        {
+            key:"profit",
+            name:"กำไร",
+            color:"#22A06B"
+        }
+
+    ];
+
+
+    /* =================================================
+       MONTH FILTER
+    ================================================= */
+
+    const filter =
+        d3.select("#monthFilter");
+
+
+    filter
+        .append("button")
+        .attr("class","active")
+        .text("ทุกเดือน")
+        .on("click",function(){
+
+            selectedMonth = "ทั้งหมด";
+
+            setMonthActive(this);
+
+            updateDashboard();
+
+        });
+
+
+    data.forEach(d => {
+
+        filter
+            .append("button")
+            .text(d.month)
+            .on("click",function(){
+
+                selectedMonth = d.month;
+
+                setMonthActive(this);
+
+                updateDashboard();
+
+            });
+
+    });
+
+
+    function setMonthActive(button){
+
+        filter
+            .selectAll("button")
+            .classed(
+                "active",
+                false
+            );
+
+        d3.select(button)
+            .classed(
+                "active",
+                true
+            );
+    }
+
+
+    /* =================================================
+       CHART SETTINGS
+    ================================================= */
+
+    const width = 680;
+    const height = 430;
+
+    const margin = {
+
+        top:25,
+        right:30,
+        bottom:75,
+        left:72
+
+    };
+
+
+    const innerWidth =
+        width -
+        margin.left -
+        margin.right;
+
+
+    const innerHeight =
+        height -
+        margin.top -
+        margin.bottom;
+
+
+    const maxValue =
+        d3.max(
+            data,
+            d =>
+                Math.max(
+                    d.revenue,
+                    d.expenses,
+                    d.profit
+                )
+        );
+
+
+    const y =
+        d3.scaleLinear()
+        .domain([
+            0,
+            maxValue * 1.12
+        ])
+        .nice()
+        .range([
+            innerHeight,
+            0
+        ]);
+
+
+    /* =================================================
+       X SCALE
+       ใช้เต็มทุกเดือน
+    ================================================= */
+
+    const x =
+        d3.scalePoint()
+        .domain(
+            data.map(d => d.month)
+        )
+        .range([
+            0,
+            innerWidth
+        ])
+        .padding(.15);
+
+
+    /* =================================================
+       LINE SVG
+    ================================================= */
+
+    const lineSvg =
+        d3.select("#revenueLine")
+        .append("svg")
+        .attr(
+            "viewBox",
+            `0 0 ${width} ${height}`
+        )
+        .attr(
+            "width",
+            "100%"
+        )
+        .attr(
+            "preserveAspectRatio",
+            "xMidYMid meet"
+        );
+
+
+    const lineG =
+        lineSvg
+        .append("g")
+        .attr(
+            "transform",
+            `translate(${margin.left},${margin.top})`
+        );
+
+
+    /* GRID */
+
+    lineG
+        .append("g")
+        .call(
+            d3.axisLeft(y)
+                .ticks(6)
+                .tickSize(-innerWidth)
+                .tickFormat("")
+        )
+        .selectAll("line")
+        .attr(
+            "class",
+            "grid-line"
+        );
+
+
+    /* X AXIS */
+
+    lineG
+        .append("g")
+        .attr(
+            "class",
+            "axis"
+        )
+        .attr(
+            "transform",
+            `translate(0,${innerHeight})`
+        )
+        .call(
+            d3.axisBottom(x)
+        )
+        .selectAll("text")
+        .style(
+            "font-family",
+            "Kanit"
+        )
+        .style(
+            "font-size",
+            "13px"
+        )
+        .attr(
+            "transform",
+            "rotate(-25)"
+        )
+        .style(
+            "text-anchor",
+            "end"
+        );
+
+
+    /* Y AXIS */
+
+    lineG
+        .append("g")
+        .attr(
+            "class",
+            "axis"
+        )
+        .call(
+            d3.axisLeft(y)
+                .ticks(6)
+                .tickFormat(
+                    d =>
+                        d3.format(",")(d / 1000)
+                        + "k"
+                )
+        );
+
+
+    /* =================================================
+       AXIS LABEL
+    ================================================= */
+
+    lineG
+        .append("text")
+        .attr(
+            "x",
+            innerWidth / 2
+        )
+        .attr(
+            "y",
+            innerHeight + 66
+        )
+        .attr(
+            "text-anchor",
+            "middle"
+        )
+        .style(
+            "font-family",
+            "Kanit"
+        )
+        .style(
+            "font-size",
+            "13px"
+        )
+        .style(
+            "fill",
+            "#88798F"
+        )
+        .text("เดือน");
+
+
+    lineG
+        .append("text")
+        .attr(
+            "transform",
+            "rotate(-90)"
+        )
+        .attr(
+            "x",
+            -innerHeight / 2
+        )
+        .attr(
+            "y",
+            -53
+        )
+        .attr(
+            "text-anchor",
+            "middle"
+        )
+        .style(
+            "font-family",
+            "Kanit"
+        )
+        .style(
+            "font-size",
+            "13px"
+        )
+        .style(
+            "fill",
+            "#88798F"
+        )
+        .text("จำนวนเงิน (บาท)");
+
+
+    /* =================================================
+       LINE GENERATOR
+       
+       สำคัญ:
+       datum = data เต็มเสมอ
+    ================================================= */
+
+    function makeLine(metric){
+
+        return d3.line()
+            .defined(
+                d =>
+                    Number.isFinite(
+                        +d[metric.key]
+                    )
+            )
+            .x(
+                d =>
+                    x(d.month)
+            )
+            .y(
+                d =>
+                    y(+d[metric.key])
+            )
+            .curve(
+                d3.curveCatmullRom.alpha(.5)
+            );
+    }
+
+
+    /* =================================================
+       DRAW LINE
+    ================================================= */
+
+    metrics.forEach(metric => {
+
+
+        const line =
+            makeLine(metric);
+
+
+        const path =
+            lineG
+            .append("path")
+            .datum(data)
+            .attr(
+                "class",
+                "revenue-line"
+            )
+            .attr(
+                "data-key",
+                metric.key
+            )
+            .attr(
+                "fill",
+                "none"
+            )
+            .attr(
+                "stroke",
+                metric.color
+            )
+            .attr(
+                "d",
+                line
+            );
+
+
+        /* =================================================
+           LINE ANIMATION
+        ================================================= */
+
+        const length =
+            path
+            .node()
+            .getTotalLength();
+
+
+        path
+            .attr(
+                "stroke-dasharray",
+                length
+            )
+            .attr(
+                "stroke-dashoffset",
+                length
+            )
+            .transition()
+            .duration(1500)
+            .ease(
+                d3.easeCubicInOut
+            )
+            .attr(
+                "stroke-dashoffset",
+                0
+            );
+
+
+        /* =================================================
+           POINTS
+        ================================================= */
+
+        lineG
+            .selectAll(
+                `.point-${metric.key}`
+            )
+            .data(data)
+            .enter()
+            .append("circle")
+            .attr(
+                "class",
+                `line-point point-${metric.key}`
+            )
+            .attr(
+                "cx",
+                d =>
+                    x(d.month)
+            )
+            .attr(
+                "cy",
+                d =>
+                    y(+d[metric.key])
+            )
+            .attr(
+                "r",
+                0
+            )
+            .attr(
+                "fill",
+                metric.color
+            )
+            .on(
+                "mouseover",
+                function(event,d){
+
+                    d3.select(this)
+                        .transition()
+                        .duration(150)
+                        .attr("r",8);
+
+
+                    tooltip
+                        .style(
+                            "opacity",
+                            1
+                        )
+                        .html(`
+                            <strong>${d.month}</strong>
+                            <br>
+                            ${metric.name}:
+                            ${money(d[metric.key])}
+                        `);
+
+                }
+            )
+            .on(
+                "mousemove",
+                function(event){
+
+                    tooltip
+                        .style(
+                            "left",
+                            event.clientX + 16 + "px"
+                        )
+                        .style(
+                            "top",
+                            event.clientY - 55 + "px"
+                        );
+
+                }
+            )
+            .on(
+                "mouseout",
+                function(){
+
+                    const isSelected =
+                        selectedMonth !== "ทั้งหมด" &&
+                        d3.select(this)
+                            .datum()
+                            .month === selectedMonth;
+
+
+                    d3.select(this)
+                        .transition()
+                        .duration(150)
+                        .attr(
+                            "r",
+                            isSelected ? 8 : 5
+                        );
+
+
+                    tooltip
+                        .style(
+                            "opacity",
+                            0
+                        );
+
+                }
+            )
+            .transition()
+            .delay(900)
+            .duration(450)
+            .attr(
+                "r",
+                5
+            );
+
+    });
+
+
+    /* =================================================
+       SELECTED GUIDE
+    ================================================= */
+
+    const selectedGuide =
+        lineG
+        .append("line")
+        .attr(
+            "class",
+            "selected-guide"
+        )
+        .attr(
+            "y1",
+            0
+        )
+        .attr(
+            "y2",
+            innerHeight
+        )
+        .attr(
+            "stroke",
+            "#CDBBDA"
+        )
+        .attr(
+            "stroke-width",
+            2
+        )
+        .attr(
+            "stroke-dasharray",
+            "5 5"
+        )
+        .style(
+            "opacity",
+            0
+        );
+
+
+    /* =================================================
+       LEGEND
+    ================================================= */
+
+    const legend =
+        lineSvg
+        .append("g")
+        .attr(
+            "transform",
+            `translate(${margin.left},${height - 18})`
+        );
+
+
+    metrics.forEach(
+        (metric,index) => {
+
+            const item =
+                legend
+                .append("g")
+                .attr(
+                    "transform",
+                    `translate(${index * 145},0)`
+                );
+
+
+            item
+                .append("circle")
+                .attr(
+                    "r",
+                    5
+                )
+                .attr(
+                    "fill",
+                    metric.color
+                );
+
+
+            item
+                .append("text")
+                .attr(
+                    "x",
+                    10
+                )
+                .attr(
+                    "y",
+                    5
+                )
+                .attr(
+                    "class",
+                    "legend-text"
+                )
+                .text(
+                    metric.name
+                );
+
+        }
+    );
+
+
+    /* =================================================
+       BAR CHART
+    ================================================= */
+
+    const barSvg =
+        d3.select("#revenueBar")
+        .append("svg")
+        .attr(
+            "viewBox",
+            `0 0 ${width} ${height}`
+        )
+        .attr(
+            "width",
+            "100%"
+        )
+        .attr(
+            "preserveAspectRatio",
+            "xMidYMid meet"
+        );
+
+
+    const barG =
+        barSvg
+        .append("g")
+        .attr(
+            "transform",
+            `translate(${margin.left},${margin.top})`
+        );
+
+
+    const xBar =
+        d3.scaleBand()
+        .domain(
+            data.map(d => d.month)
+        )
+        .range([
+            0,
+            innerWidth
+        ])
+        .padding(.22);
+
+
+    /* BAR GRID */
+
+    barG
+        .append("g")
+        .call(
+            d3.axisLeft(y)
+                .ticks(6)
+                .tickSize(-innerWidth)
+                .tickFormat("")
+        )
+        .selectAll("line")
+        .attr(
+            "class",
+            "grid-line"
+        );
+
+
+    /* BAR Y */
+
+    barG
+        .append("g")
+        .attr(
+            "class",
+            "axis"
+        )
+        .call(
+            d3.axisLeft(y)
+                .ticks(6)
+                .tickFormat(
+                    d =>
+                        d3.format(",")(d / 1000)
+                        + "k"
+                )
+        );
+
+
+    /* BAR X */
+
+    barG
+        .append("g")
+        .attr(
+            "class",
+            "axis"
+        )
+        .attr(
+            "transform",
+            `translate(0,${innerHeight})`
+        )
+        .call(
+            d3.axisBottom(xBar)
+        )
+        .selectAll("text")
+        .style(
+            "font-family",
+            "Kanit"
+        )
+        .style(
+            "font-size",
+            "13px"
+        )
+        .attr(
+            "transform",
+            "rotate(-25)"
+        )
+        .style(
+            "text-anchor",
+            "end"
+        );
+
+
+    /* =================================================
+       BAR
+    ================================================= */
+
+    const barWidth =
+        xBar.bandwidth() / 3;
+
+
+    metrics.forEach(
+        (metric,index) => {
+
+
+            barG
+                .selectAll(
+                    `.bar-${metric.key}`
+                )
+                .data(data)
+                .enter()
+                .append("rect")
+                .attr(
+                    "class",
+                    `bar-${metric.key}`
+                )
+                .attr(
+                    "x",
+                    d =>
+                        xBar(d.month)
+                        +
+                        index * barWidth
+                )
+                .attr(
+                    "width",
+                    barWidth - 4
+                )
+                .attr(
+                    "y",
+                    innerHeight
+                )
+                .attr(
+                    "height",
+                    0
+                )
+                .attr(
+                    "rx",
+                    7
+                )
+                .attr(
+                    "fill",
+                    metric.color
+                )
+                .on(
+                    "mouseover",
+                    function(event,d){
+
+                        d3.select(this)
+                            .transition()
+                            .duration(150)
+                            .attr(
+                                "opacity",
+                                .65
+                            );
+
+
+                        tooltip
+                            .style(
+                                "opacity",
+                                1
+                            )
+                            .html(`
+                                <strong>${d.month}</strong>
+                                <br>
+                                ${metric.name}:
+                                ${money(d[metric.key])}
+                            `);
+
+                    }
+                )
+                .on(
+                    "mousemove",
+                    function(event){
+
+                        tooltip
+                            .style(
+                                "left",
+                                event.clientX + 16 + "px"
+                            )
+                            .style(
+                                "top",
+                                event.clientY - 55 + "px"
+                            );
+
+                    }
+                )
+                .on(
+                    "mouseout",
+                    function(){
+
+                        d3.select(this)
+                            .transition()
+                            .duration(150)
+                            .attr(
+                                "opacity",
+                                1
+                            );
+
+
+                        tooltip
+                            .style(
+                                "opacity",
+                                0
+                            );
+
+                    }
+                )
+                .transition()
+                .delay(index * 160)
+                .duration(850)
+                .attr(
+                    "y",
+                    d =>
+                        y(+d[metric.key])
+                )
+                .attr(
+                    "height",
+                    d =>
+                        innerHeight -
+                        y(+d[metric.key])
+                );
+
+        }
+    );
+
+
+    /* =================================================
+       UPDATE DASHBOARD
+    ================================================= */
+
+    function updateDashboard(){
+
+
+        /* -----------------------------------------------
+           FILTERED DATA
+        ----------------------------------------------- */
+
+        const filtered =
+            selectedMonth === "ทั้งหมด"
+            ? data
+            : data.filter(
+                d =>
+                    d.month === selectedMonth
+            );
+
+
+        /* -----------------------------------------------
+           STATS
+        ----------------------------------------------- */
+
+        const revenue =
+            d3.sum(
+                filtered,
+                d => +d.revenue
+            );
+
+
+        const expenses =
+            d3.sum(
+                filtered,
+                d => +d.expenses
+            );
+
+
+        const profit =
+            d3.sum(
+                filtered,
+                d => +d.profit
+            );
+
+
+        d3.select("#totalRevenue")
+            .text(
+                money(revenue)
+            );
+
+
+        d3.select("#totalExpenses")
+            .text(
+                money(expenses)
+            );
+
+
+        d3.select("#totalProfit")
+            .text(
+                money(profit)
+            );
+
+
+        /* =================================================
+           LINE
+           
+           ห้ามเปลี่ยน datum ของเส้น
+           เส้นจะใช้ data เต็มตลอด
+        ================================================= */
+
+        metrics.forEach(metric => {
+
+            lineG
+                .selectAll(
+                    `.point-${metric.key}`
+                )
+                .transition()
+                .duration(400)
+                .attr(
+                    "opacity",
+                    d => {
+
+                        if(
+                            selectedMonth === "ทั้งหมด"
+                        ){
+                            return 1;
+                        }
+
+                        return d.month === selectedMonth
+                            ? 1
+                            : .25;
+                    }
+                )
+                .attr(
+                    "r",
+                    d => {
+
+                        if(
+                            selectedMonth !== "ทั้งหมด" &&
+                            d.month === selectedMonth
+                        ){
+                            return 8;
+                        }
+
+                        return 5;
+                    }
+                );
+
+        });
+
+
+        /* =================================================
+           GUIDE LINE
+        ================================================= */
+
+        if(
+            selectedMonth === "ทั้งหมด"
+        ){
+
+            selectedGuide
+                .transition()
+                .duration(300)
+                .style(
+                    "opacity",
+                    0
+                );
+
+        }else{
+
+            const selected =
+                data.find(
+                    d =>
+                        d.month === selectedMonth
+                );
+
+
+            if(selected){
+
+                selectedGuide
+                    .attr(
+                        "x1",
+                        x(selected.month)
+                    )
+                    .attr(
+                        "x2",
+                        x(selected.month)
+                    )
+                    .transition()
+                    .duration(400)
+                    .style(
+                        "opacity",
+                        1
+                    );
+            }
+
+        }
+
+
+        /* =================================================
+           BAR
+           
+           Filter เฉพาะ Bar
+        ================================================= */
+
+        metrics.forEach(metric => {
+
+            barG
+                .selectAll(
+                    `.bar-${metric.key}`
+                )
+                .transition()
+                .duration(550)
+                .attr(
+                    "opacity",
+                    d => {
+
+                        if(
+                            selectedMonth === "ทั้งหมด"
+                        ){
+                            return 1;
+                        }
+
+                        return d.month === selectedMonth
+                            ? 1
+                            : .12;
+                    }
+                )
+                .attr(
+                    "y",
+                    d => {
+
+                        if(
+                            selectedMonth !== "ทั้งหมด" &&
+                            d.month !== selectedMonth
+                        ){
+                            return innerHeight;
+                        }
+
+                        return y(+d[metric.key]);
+                    }
+                )
+                .attr(
+                    "height",
+                    d => {
+
+                        if(
+                            selectedMonth !== "ทั้งหมด" &&
+                            d.month !== selectedMonth
+                        ){
+                            return 0;
+                        }
+
+                        return (
+                            innerHeight -
+                            y(+d[metric.key])
+                        );
+                    }
+                );
+
+        });
+
+    }
+
+
+    /* =================================================
+       START
+    ================================================= */
+
+    updateDashboard();
+
+})
+.catch(error => {
+
+    console.error(
+        "ไม่สามารถโหลด MonthlyRevenue.json",
+        error
+    );
+
+});
+
+</script>
+
+
+</body>
+</html>
