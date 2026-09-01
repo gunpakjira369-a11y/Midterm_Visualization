@@ -1,38 +1,8 @@
 [
-    {
-        "month": "มกราคม",
-        "revenue": 120000,
-        "expenses": 70000,
-        "profit": 50000
-    },
-    {
-        "month": "กุมภาพันธ์",
-        "revenue": 135000,
-        "expenses": 75000,
-        "profit": 60000
-    },
-    {
-        "month": "มีนาคม",
-        "revenue": 150000,
-        "expenses": 80000,
-        "profit": 70000
-    },
-    {
-        "month": "เมษายน",
-        "revenue": 142000,
-        "expenses": 78000,
-        "profit": 64000
-    },
-    {
-        "month": "พฤษภาคม",
-        "revenue": 165000,
-        "expenses": 85000,
-        "profit": 80000
-    },
-    {
-        "month": "มิถุนายน",
-        "revenue": 180000,
-        "expenses": 90000,
-        "profit": 90000
-    }
+  {"month": "Jan", "revenue": 5000},
+  {"month": "Feb", "revenue": 5500},
+  {"month": "Mar", "revenue": 6000},
+  {"month": "Apr", "revenue": 6500},
+  {"month": "May", "revenue": 7000},
+  {"month": "Jun", "revenue": 7500}
 ]
